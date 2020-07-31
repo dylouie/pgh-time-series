@@ -79,6 +79,20 @@ doctors_nurses_breakdown <- up_pgh_hcw_time_series %>%
 doctors_nurses_breakdown
 ggsave("doctors_nurses_breakdown.png")
 
-auto.arima(ts(up_pgh_hcw_time_series$tested_hcw), d = 1)
-auto.arima(ts(up_pgh_hcw_time_series$positive_hcw), d = 1)
-auto.arima(ts(up_pgh_hcw_time_series$))
+# extreme value statistics
+
+print("Maximum Nurse to Doctor Infection Ratio:")
+print(max(ratio_data$n_d_ratio, na.rm = TRUE))
+
+print("Minimum Nurse to Doctor Infection Ratio:")
+print(min(ratio_data$n_d_ratio, na.rm = TRUE))
+
+print("Maximum Non-COVID to COVID Area Infection Ratio:")
+print(max(ratio_data$ratio, na.rm = TRUE))
+
+print("Minimum Non-COVID to COVID Area Infection Ratio:")
+print(min(ratio_data$ratio, na.rm = TRUE))
+
+# moving average statistics
+
+#ratio_data_ma <- ratio_data %>% mutate()

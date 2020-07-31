@@ -49,17 +49,21 @@ hospital_rates_plot <- up_pgh_patient_flow_time_series %>%
 hospital_rates_plot
 ggsave("hospital_rates_plot.png")
 
+# time series dataset
+
+time_series_dataset <- up_pgh_patient_flow_time_series %>%
+  filter(report_date >= ymd("2020-07-01"))
+
 # time series analysis - net admission
 
-net_admission_flow <- up_pgh_patient_flow_time_series %>%
-  filter(report_date >= mdy("5/24/2020")) %>%
+net_admission_flow <- time_series_dataset %>%
   select(report_date, total_covid_admissions)
 
 net_admission_flow_plot <- net_admission_flow %>%
   ggplot(aes(x = report_date, y = total_covid_admissions)) +
   geom_point() +
   geom_smooth() +
-  labs(title = "Philippine General Hospital Net Admissions (Bed Demand) since May 24") +
+  labs(title = "Philippine General Hospital Net Admissions (Bed Demand)") +
   xlab("Reporting Date") +
   ylab("Net Admissions")
 net_admission_flow_plot
@@ -67,15 +71,14 @@ ggsave("net_admission_flow_plot.png")
 
 # time series analysis - deaths
 
-death_flow <- up_pgh_patient_flow_time_series %>%
-  filter(report_date >= mdy("5/24/2020")) %>%
+death_flow <- time_series_dataset %>%
   select(report_date, cumulative_expired)
 
 death_flow_plot <- death_flow %>%
   ggplot(aes(x = report_date, y = cumulative_expired)) +
   geom_point() +
   geom_smooth() +
-  labs(title = "Philippine General Hospital Total Deaths since May 24") +
+  labs(title = "Philippine General Hospital Total Deaths") +
   xlab("Reporting Date") +
   ylab("Total Deaths")
 death_flow_plot
@@ -83,15 +86,14 @@ ggsave("death_flow_plot.png")
 
 # time series analysis - discharge
 
-discharge_flow <- up_pgh_patient_flow_time_series %>%
-  filter(report_date >= mdy("5/24/2020")) %>%
+discharge_flow <- time_series_dataset %>%
   select(report_date, cumulative_discharged)
 
 discharge_flow_plot <- discharge_flow %>%
   ggplot(aes(x = report_date, y = cumulative_discharged)) +
   geom_point() +
   geom_smooth() +
-  labs(title = "Philippine General Hospital Total Discharged since May 24") +
+  labs(title = "Philippine General Hospital Total Discharged") +
   xlab("Reporting Date") +
   ylab("Total Discharged")
 discharge_flow_plot
@@ -99,15 +101,14 @@ ggsave("discharge_flow_plot.png")
 
 # time series analysis - new admissions
 
-admission_flow <- up_pgh_patient_flow_time_series %>%
-  filter(report_date >= mdy("5/24/2020")) %>%
+admission_flow <- time_series_dataset %>%
   select(report_date, cumulative_admissions)
 
 admission_flow_plot <- admission_flow %>%
   ggplot(aes(x = report_date, y = cumulative_admissions)) +
   geom_point() +
   geom_smooth() +
-  labs(title = "Philippine General Hospital Total Admissions since May 24") +
+  labs(title = "Philippine General Hospital Total Admissions") +
   xlab("Reporting Date") +
   ylab("Total Admitted")
 admission_flow_plot
@@ -115,8 +116,7 @@ ggsave("admission_flow_plot.png")
 
 # fusion flow graph
 
-fusion_flow <- up_pgh_patient_flow_time_series %>%
-  filter(report_date >= mdy("5/24/2020")) %>%
+fusion_flow <- time_series_dataset %>%
   select(report_date, total_covid_admissions, cumulative_discharged, cumulative_expired, cumulative_admissions)
 
 fusion_flow_plot <- fusion_flow %>%
@@ -151,3 +151,23 @@ checkresiduals(auto.arima(ts(death_flow$cumulative_discharged)))
 auto.arima(ts(admission_flow$cumulative_admissions), d = 1)
 checkresiduals(auto.arima(ts(admission_flow$cumulative_admissions)))
 ggsave("admissions_residuals.png")
+
+# Extreme value statistics
+
+print("Highest 6 Admissions:")
+print(head(sort(time_series_dataset$total_covid_admissions, decreasing = TRUE)))
+
+print("Lowest 6 Admissions:")
+print(head(sort(time_series_dataset$total_covid_admissions, decreasing = FALSE)))
+
+print("Maximum Hospitality Recovery Rate:")
+print(max(time_series_dataset$hospital_recovery_rate, na.rm = TRUE))
+
+print("Minimum Hospitality Recovery Rate:")
+print(min(time_series_dataset$hospital_recovery_rate, na.rm = TRUE))
+
+print("Maximum Hospitality Fatality Rate:")
+print(max(time_series_dataset$hospital_fatality_rate, na.rm = TRUE))
+
+print("Minimum Hospitality Fatality Rate:")
+print(min(time_series_dataset$hospital_fatality_rate, na.rm = TRUE))
